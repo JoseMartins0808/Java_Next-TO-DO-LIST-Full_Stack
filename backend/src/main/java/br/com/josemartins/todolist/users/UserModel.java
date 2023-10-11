@@ -52,9 +52,9 @@ public class UserModel {
         this.password = password;
     }
 
-    // public String getPassword () {
-    //     return this.password;
-    // }
+    public String getPassword () {
+        return this.password;
+    }
 
     public LocalDateTime getCreatedAt () {
         return this.createdAt;
