@@ -43,6 +43,10 @@ public class TaskModel {
         return this.id;
     }
 
+    public void setId (UUID id) {
+        this.id = id;
+    }
+
     public String getDescription () {
         return this.description;
     }
@@ -89,6 +93,10 @@ public class TaskModel {
 
     public UUID getUserId () {
         return this.userId;
+    }
+
+    public void setUserId (UUID userId) {
+        this.userId = userId;
     }
 
 

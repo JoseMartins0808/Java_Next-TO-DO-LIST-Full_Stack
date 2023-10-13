@@ -27,33 +27,41 @@ public class FilterTaskAuth extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        final String authorization = request.getHeader("Authorization");
+        final String servletPath = request.getServletPath();
 
-        final String authEncoded = authorization.substring(6);
+        if(servletPath.equals("/tasks")){
 
-        final byte[] authDecoded = Base64.getDecoder().decode(authEncoded);
+            final String authorization = request.getHeader("Authorization");
 
-        final String authString = new String(authDecoded);
+            final String authEncoded = authorization.substring(6);
 
-        final String[] credentials = authString.split(":");
+            final byte[] authDecoded = Base64.getDecoder().decode(authEncoded);
 
-        final String username = credentials[0];
+            final String authString = new String(authDecoded);
 
-        final String password = credentials[1];
+            final String[] credentials = authString.split(":");
 
-        final UserModel userFound = this.userRepository.findByUsername(username);
+            final String username = credentials[0];
+
+            final String password = credentials[1];
+
+            final UserModel userFound = this.userRepository.findByUsername(username);
         
-        if (userFound == null) {
-            response.sendError(401, "User not found");
-
-        } else {
-            final boolean verifyPass = BCrypt.verifyer().verify(password.toCharArray(), userFound.getPassword()).verified;
-            
-            if(!verifyPass) {
+            if (userFound == null) {
                 response.sendError(401, "User not found");
-            }else {
-                filterChain.doFilter(request, response);
+
+            } else {
+                final boolean verifyPass = BCrypt.verifyer().verify(password.toCharArray(), userFound.getPassword()).verified;
+            
+                if(!verifyPass) {
+                    response.sendError(401, "Invalid credentials");
+                }else {
+                    request.setAttribute("userId", userFound.getId());
+                    filterChain.doFilter(request, response);
+                }
             }
+        } else {
+            filterChain.doFilter(request, response);
         }
     }
 }
