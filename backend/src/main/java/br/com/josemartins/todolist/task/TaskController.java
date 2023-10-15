@@ -70,11 +70,22 @@ public class TaskController {
     @PatchMapping("/{taskId}")
     public ResponseEntity<TaskModel> update (@RequestBody TaskModel taskModel, HttpServletRequest request, @PathVariable UUID taskId) {
 
-        final TaskModel taskFound = this.taskRepository.findById(taskId).orElseThrow(()-> null);
+        final TaskModel taskFound = this.taskRepository.findById(taskId).orElse(null);
+
+        final Object userId = request.getAttribute("userId");
+
+        if(!taskFound.getUserId().equals(userId)){
+            final HashMap<String, String> errorMessage = new HashMap<String, String>();
+            errorMessage.put("message", "Task does not belongs to this user");
+            // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+            System.out.println(errorMessage);
+            return null;
+        }
 
         Utils.copyNotNullProperties(taskModel, taskFound);
 
         final TaskModel updateTask = this.taskRepository.save(taskFound);
+
 
         return ResponseEntity.status(HttpStatus.OK).body(updateTask);
     }

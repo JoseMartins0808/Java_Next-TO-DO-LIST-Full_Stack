@@ -59,7 +59,10 @@ public class TaskModel {
         return this.title;
     }
 
-    public void setTitle (String title) {
+    public void setTitle (String title) throws Exception {
+        if(title.length() > 50) {
+            throw new Exception("Title must have less than 50 caracteres");
+        }
         this.title = title;
     }
 
@@ -98,6 +101,7 @@ public class TaskModel {
     public void setUserId (UUID userId) {
         this.userId = userId;
     }
+
 
 
 
